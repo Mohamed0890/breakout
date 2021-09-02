@@ -8,10 +8,13 @@ var ball, ballImg;
 var paddle;
 var edges;
 var brickG;
+var bgSound, hitsound;
 var score=0;
 var gameState="serve"
 function preload(){
 ballImg=loadImage("ball.png");
+bgSound=loadSound("repitition.mp3");
+hitsound=loadSound("destruction_5.mp3");
 }
 
 function setup() {
@@ -26,7 +29,7 @@ function setup() {
   edges=createEdgeSprites();
 
   brickG = new Group();
-
+  bgSound.loop();
   createBrickRow(200,"red");
   createBrickRow(254,"orange"); 
   createBrickRow(308,"yellow");
@@ -55,9 +58,9 @@ function draw() {
   text("Score: "+score,500,100);
 
   if(score===300){
-    textSize(500);
+    textSize(200);
     fill("red");
-    text("YOU WON",200,540);
+    text("YOU WON",500,540);
     ball.velocityX=0;
     ball.velocityY=0;
   }
@@ -68,6 +71,19 @@ function draw() {
     ball.x=960;
     ball.y=540;
     gameState='serve';
+  }
+  if(brickG.isTouching(edges[3])){
+    textSize(200);
+    fill("blue");
+    text("YOU LOSE",500,540);
+    setTimeout(() => {
+      brickG.destroyEach();
+    }, 2000);
+    brickG.setVelocityYEach(0);
+    ball.velocityX=0;
+    ball.velocityY=0;
+    gameState='end';
+    
   }
  drawSprites(); 
 }
@@ -94,6 +110,7 @@ function keyPressed(){
 function brickHit(ball,brick){
   brick.destroy();
   score=score+5;
+  hitsound.play();
 }
 
 
